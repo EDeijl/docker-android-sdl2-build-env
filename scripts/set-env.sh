@@ -14,7 +14,7 @@ export PATH=$PLATFORM_PREFIX/bin:$NDK_ADDON_PREFIX/bin:$HOME/.ghc/android-host/b
 # Basic configuration
 export MAKEFLAGS=${MAKEFLAGS:--j9}
 HOST=arm-linux-androideabi
-NDK_PATH=$HOME/android-ndk-r9
+NDK_PATH=$HOME/android-ndk-r9b
 
 export PKG_CONFIG_PATH=$NDK_ADDON_PREFIX/lib/pkgconfig
 
