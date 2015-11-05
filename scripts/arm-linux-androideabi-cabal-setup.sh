@@ -50,7 +50,7 @@ case $ARG in
       --with-strip=$ARCH-strip \
       --hsc2hs-options=--cross-compile \
       --prefix=$PLATFORM_PREFIX/cabal \
-      --package-db=$PLATFORM_PREFIX/lib/arm-unknown-linux-androideabi-ghc-7.8.3/package.conf.d \
+      --package-db=$PLATFORM_PREFIX/lib/arm-unknown-linux-androideabi-ghc-7.8.4/package.conf.d \
       "$@"
   ;;
 

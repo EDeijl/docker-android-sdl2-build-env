@@ -1,5 +1,5 @@
-FROM sseefried/debian-wheezy-ghc-android
-MAINTAINER sean.seefried@gmail.com
+FROM edeijl/ghc-android
+MAINTAINER erik.deijl@gmail.com
 
 USER androidbuilder
 ENV BASE /home/androidbuilder/build
@@ -11,7 +11,9 @@ WORKDIR $BASE
 #
 
 USER root
-
+run echo "deb http://ftp.nl.debian.org/debian wheezy main" > /etc/apt/sources.list
+run echo "deb-src http://ftp.nl.debian.org/debian wheezy main" >> /etc/apt/sources.list
+RUN apt-get update
 RUN apt-get install ant openjdk-6-jdk -y
 RUN wget http://dl.google.com/android/android-sdk_r24.2-linux.tgz
 RUN cd .. && tar xzf build/android-sdk_r24.2-linux.tgz
@@ -51,58 +53,10 @@ ADD scripts/build-libpng.sh $BASE/
 RUN ./build-libpng.sh
 
 #
-# Build pixman
-#
-ADD scripts/download-pixman.sh $BASE/
-RUN ./download-pixman.sh
-ADD scripts/build-pixman.sh $BASE/
-RUN ./build-pixman.sh
-
-#
-# Build freetype
-#
-
-ADD scripts/download-freetype.sh $BASE/
-RUN ./download-freetype.sh
-ADD scripts/build-freetype.sh $BASE/
-RUN ./build-freetype.sh
-
-
-#
-# Build cairo
-#
-
-ADD scripts/download-cairo.sh $BASE/
-RUN ./download-cairo.sh
-ADD scripts/build-cairo.sh $BASE/
-ADD scripts/locale.h.android $BASE/
-RUN ./build-cairo.sh
-
-#
-# Build libogg
-#
-
-ADD scripts/download-libogg.sh $BASE/
-RUN ./download-libogg.sh
-ADD scripts/build-libogg.sh $BASE/
-RUN ./build-libogg.sh
-
-#
-# Build libvorbis
-#
-
-ADD scripts/download-libvorbis.sh $BASE/
-RUN ./download-libvorbis.sh
-ADD scripts/build-libvorbis.sh $BASE/
-RUN ./build-libvorbis.sh
-
-#
 # Download SDL2 and SDL2_mixer
 #
 ADD scripts/clone-SDL2-mobile.sh $BASE/
 RUN ./clone-SDL2-mobile.sh
-ADD scripts/clone-SDL2_mixer-mobile.sh $BASE/
-RUN ./clone-SDL2_mixer-mobile.sh
 
 #
 # Build SDL2
@@ -111,28 +65,6 @@ RUN ./clone-SDL2_mixer-mobile.sh
 ADD scripts/build-SDL2-mobile.sh $BASE/
 RUN ./build-SDL2-mobile.sh
 
-#
-# Build SDL2_mixer
-#
-
-ADD scripts/build-SDL2_mixer-mobile.sh $BASE/
-RUN ./build-SDL2_mixer-mobile.sh
-
-
-#
-# Cabal install text-1.2.0.0
-#
-
-ADD scripts/cabal-install-text.sh $BASE/
-RUN ./cabal-install-text.sh
-
-#
-# Cabal install vector-0.10.12.1
-#
-
-ADD scripts/cabal-install-vector.sh $BASE/
-ADD scripts/vector-0.10.12.1.patch $BASE/
-RUN ./cabal-install-vector.sh
 
 #
 # Add cabal setup wrapper
@@ -141,75 +73,109 @@ RUN ./cabal-install-vector.sh
 ADD scripts/arm-linux-androideabi-cabal-setup.sh /home/androidbuilder/.ghc/android-14/arm-linux-androideabi-4.8/bin/
 
 #
+# SDL dependencies
+#
+ADD scripts/update-cabal.sh $BASE/
+RUN ./update-cabal.sh
+#ADD scripts/get-bytes.sh $BASE/
+#RUN ./get-bytes.sh
+#ADD scripts/build-bytes.sh $BASE/
+#RUN ./build-bytes.sh
+#ADD scripts/get-distributive.sh $BASE/
+#RUN ./get-distributive.sh
+#ADD scripts/build-distributive.sh $BASE/
+#RUN ./build-distributive.sh
+#ADD scripts/get-comonad.sh $BASE/
+#RUN ./get-comonad.sh
+#ADD scripts/build-comonad.sh $BASE/
+#RUN ./build-comonad.sh
+#ADD scripts/get-reflection.sh $BASE/
+#RUN ./get-reflection.sh
+#ADD scripts/build-reflection.sh $BASE/
+#RUN ./build-reflection.sh
+#ADD scripts/get-semigroupoids.sh $BASE/
+#RUN ./get-semigroupoids.sh
+#ADD scripts/build-semigroupoids.sh $BASE/
+#RUN ./build-semigroupoids.sh
+#ADD scripts/get-lens.sh $BASE/
+#RUN ./get-lens.sh
+#ADD scripts/build-lens.sh $BASE/
+#RUN ./build-lens.sh
+#ADD scripts/get-linear.sh $BASE/
+#RUN ./get-linear.sh
+#ADD scripts/build-linear.sh $BASE/
+#RUN ./build-linear.sh
+
+#
 # Clone & build hsSDL2
 #
 
-ADD scripts/clone-hsSDL2.sh $BASE/
-RUN ./clone-hsSDL2.sh
-ADD scripts/build-hsSDL2.sh $BASE/
-RUN ./build-hsSDL2.sh
-
+#ADD scripts/clone-hsSDL2.sh $BASE/
+#RUN ./clone-hsSDL2.sh
+#ADD scripts/build-hsSDL2.sh $BASE/
+#RUN ./build-hsSDL2.sh
 #
-# Clone & build hs-sdl2-mixer
+##
+## Clone & build hs-sdl2-mixer
+##
 #
-
-ADD scripts/clone-hs-sdl2-mixer.sh $BASE/
-RUN ./clone-hs-sdl2-mixer.sh
-ADD scripts/build-hs-sdl2-mixer.sh $BASE/
-RUN ./build-hs-sdl2-mixer.sh
-
-
+#ADD scripts/clone-hs-sdl2-mixer.sh $BASE/
+#RUN ./clone-hs-sdl2-mixer.sh
+#ADD scripts/build-hs-sdl2-mixer.sh $BASE/
+#RUN ./build-hs-sdl2-mixer.sh
 #
-# cabal install gtk2hs-buildtoosa (for host compiler)
 #
-
-ADD scripts/cabal-install-gtk2hs-buildtools.sh $BASE/
-RUN ./cabal-install-gtk2hs-buildtools.sh
-
+##
+## cabal install gtk2hs-buildtoosa (for host compiler)
+##
 #
-# Build all epidemic dependencies
+#ADD scripts/cabal-install-gtk2hs-buildtools.sh $BASE/
+#RUN ./cabal-install-gtk2hs-buildtools.sh
 #
-
-ADD scripts/cabal-install-hs-cairo-dependencies.sh $BASE/
-RUN ./cabal-install-hs-cairo-dependencies.sh
-
+##
+## Build all epidemic dependencies
+##
 #
-# Build Cairo Haskell binding
+#ADD scripts/cabal-install-hs-cairo-dependencies.sh $BASE/
+#RUN ./cabal-install-hs-cairo-dependencies.sh
 #
-
-ADD scripts/clone-hs-cairo.sh $BASE/
-RUN ./clone-hs-cairo.sh
-ADD scripts/build-hs-cairo.sh $BASE/
-RUN ./build-hs-cairo.sh
-
+##
+## Build Cairo Haskell binding
+##
 #
-# Build Haskell Chipmunk binding, Hipmunk
+#ADD scripts/clone-hs-cairo.sh $BASE/
+#RUN ./clone-hs-cairo.sh
+#ADD scripts/build-hs-cairo.sh $BASE/
+#RUN ./build-hs-cairo.sh
 #
-
-ADD scripts/clone-Hipmunk.sh $BASE/
-RUN ./clone-Hipmunk.sh
-ADD scripts/build-Hipmunk.sh $BASE/
-RUN ./build-Hipmunk.sh
-
+##
+## Build Haskell Chipmunk binding, Hipmunk
+##
 #
-# Build OpenGLRaw
+#ADD scripts/clone-Hipmunk.sh $BASE/
+#RUN ./clone-Hipmunk.sh
+#ADD scripts/build-Hipmunk.sh $BASE/
+#RUN ./build-Hipmunk.sh
 #
-
-ADD scripts/clone-OpenGLRaw.sh $BASE/
-RUN ./clone-OpenGLRaw.sh
-ADD scripts/build-OpenGLRaw.sh $BASE/
-RUN ./build-OpenGLRaw.sh
-
+##
+## Build OpenGLRaw
+##
 #
-# Clone Epidemic
+#ADD scripts/clone-OpenGLRaw.sh $BASE/
+#RUN ./clone-OpenGLRaw.sh
+#ADD scripts/build-OpenGLRaw.sh $BASE/
+#RUN ./build-OpenGLRaw.sh
 #
-
-ADD scripts/clone-epidemic-game.sh $BASE/
-RUN ./clone-epidemic-game.sh
-
+##
+## Clone Epidemic
+##
 #
-# Clone android-build-epidemic-apk
+#ADD scripts/clone-epidemic-game.sh $BASE/
+#RUN ./clone-epidemic-game.sh
 #
-
-ADD scripts/clone-android-build-epidemic-apk.sh $BASE/
-RUN ./clone-android-build-epidemic-apk.sh
+##
+## Clone android-build-epidemic-apk
+##
+#
+#ADD scripts/clone-android-build-epidemic-apk.sh $BASE/
+#RUN ./clone-android-build-epidemic-apk.sh
